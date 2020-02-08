@@ -45,26 +45,19 @@ pub fn update_tpiu_baudrate(trace_clk_freq: u32, baud: u32) -> Result<(), Error>
 }
 
 struct ItmLogger {
+    enabled: bool,
     log_level: Level,
 }
 
 impl Log for ItmLogger {
     fn enabled(&self, metadata: &Metadata) -> bool {
-        metadata.level() <= self.log_level
+        self.enabled && metadata.level() <= self.log_level
     }
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             unsafe {
                 let itm = &mut (*ITM::ptr());
-                // Check tracing and the stim port are enabled, if not iprintln will hang
-                // waiting for the fifo to be ready
-                if itm.tcr.read() & ITM_TCR_ENABLE_MASK == 0 ||
-                   itm.ter[0].read() & (1 << (STIM_PORT_NUMBER as u32)) == 0
-                {
-                    return;
-                }
-
                 interrupt::free(|_| {
                     iprintln!(
                         &mut itm.stim[STIM_PORT_NUMBER],
@@ -80,14 +73,29 @@ impl Log for ItmLogger {
     fn flush(&self) {}
 }
 
-static LOGGER: ItmLogger = ItmLogger {
+static mut LOGGER: ItmLogger = ItmLogger {
+    enabled: true,
     log_level: Level::Trace,
 };
 
 pub fn init_with_level(log_level: Level) -> Result<(), SetLoggerError> {
-    log::set_logger(&LOGGER)?;
+    interrupt::free(|_| unsafe {
+        log::set_logger(&LOGGER)
+    })?;
     log::set_max_level(log_level.to_level_filter());
     Ok(())
+}
+
+pub fn disable_logger() {
+    interrupt::free(|_| unsafe {
+        LOGGER.enabled = false;
+    });
+}
+
+pub fn enable_logger() {
+    interrupt::free(|_| unsafe {
+        LOGGER.enabled = true;
+    });
 }
 
 pub fn init() -> Result<(), SetLoggerError> {
