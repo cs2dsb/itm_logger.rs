@@ -14,8 +14,6 @@ use log::{
     SetLoggerError
 };
 
-const ITM_TCR_ENABLE_POS: u32 = 0;
-const ITM_TCR_ENABLE_MASK: u32 = 1 << ITM_TCR_ENABLE_POS;
 const STIM_PORT_NUMBER: usize = 0;
 
 #[derive(Debug, PartialEq, Clone, Copy)]

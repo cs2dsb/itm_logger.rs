@@ -21,11 +21,17 @@ pub use logger::{
 #[macro_export]
 macro_rules! stub {
     (target: $target:expr, $( $arg:expr$(,)?)+ ) => (
-        let _ = $target;
-        $(let _ = $arg;)+
+        {
+            let _ = $target;
+            $(let _ = $arg;)+
+            ()
+        }
     );
     ( $( $arg:expr$(,)?)+ ) => (
-        $(let _ = $arg;)+
+        {
+            $(let _ = $arg;)+
+            ()
+        }
     )
 }
 
