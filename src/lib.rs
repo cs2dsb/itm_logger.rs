@@ -17,7 +17,6 @@ pub use logger::{
     enable_logger,
 };
 
-#[cfg(not(feature = "logging"))]
 #[macro_export]
 macro_rules! stub {
     (target: $target:expr, $( $arg:expr$(,)?)+ ) => (
