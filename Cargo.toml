@@ -3,9 +3,17 @@ name = "itm_logger"
 version = "0.1.0"
 authors = ["cs2dsb <cs2dsb@gmail.com>"]
 edition = "2018"
+description = "An implementation of the log facade that sends logging information over ITM stim port 0"
+categories = ["debugging"]
+keywords = ["logging", "cortex-m", "no_std"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/cs2dsb/itm_logger.rs"
+readme = "README.md"
+documentation = "https://docs.rs/itm_logger"
+homepage = "https://github.com/cs2dsb/itm_logger.rs"
 
 [dependencies]
-cortex-m = { version = "0.5.8", optional = true }
+cortex-m = { version = "0.6.2", optional = true }
 log = { version = "0.4.6", default-features = false, optional = true }
 
 [features]
