@@ -21,10 +21,6 @@ pub enum Error {
     ImpossibleBaudRate,
 }
 
-pub fn logger_init() {
-    init().unwrap();
-}
-
 ///Updates the tpiu prescaler to output the desired baud rate
 ///trace_clk_freq: The frequency of TRACECLKIN in HZ, this is HCLK on most STM32 devices
 ///                but is implementation specific. Check the ref manual for TRACECLKIN
@@ -49,7 +45,36 @@ struct ItmLogger {
 
 impl Log for ItmLogger {
     fn enabled(&self, metadata: &Metadata) -> bool {
-        self.enabled && metadata.level() <= self.log_level
+        if !(self.enabled && metadata.level() <= self.log_level) {
+            return false;
+        }
+
+        #[cfg(feature = "perform-enabled-checks")] 
+        unsafe {
+            use cortex_m::peripheral::DCB;
+
+            const ITM_TCR_ENABLE_POS: u32 = 0;
+            const ITM_TCR_ENABLE_MASK: u32 = 1 << ITM_TCR_ENABLE_POS;
+
+            let itm = &(*ITM::ptr());
+
+            // Check if DEBUGEN is set
+            if !DCB::is_debugger_attached() {
+                return false;
+            }            
+
+            // Check if tracing is enabled
+            if itm.tcr.read() & ITM_TCR_ENABLE_MASK == 0 {
+                return false;
+            }
+
+            // Check if the stim port we're using is enabled
+            if itm.ter[0].read() & (1 << (STIM_PORT_NUMBER as u32)) == 0 {
+                return false;
+            }
+        }
+
+        true
     }
 
     fn log(&self, record: &Record) {
@@ -76,6 +101,7 @@ static mut LOGGER: ItmLogger = ItmLogger {
     log_level: Level::Trace,
 };
 
+/// Initialise the logger and set the log level to the provided `log_level`
 pub fn init_with_level(log_level: Level) -> Result<(), SetLoggerError> {
     interrupt::free(|_| unsafe {
         log::set_logger(&LOGGER)
@@ -84,18 +110,26 @@ pub fn init_with_level(log_level: Level) -> Result<(), SetLoggerError> {
     Ok(())
 }
 
+/// Initialize the logger with default log level (Trace)
+pub fn init() -> Result<(), SetLoggerError> {
+    init_with_level(Level::Trace)
+}
+
+/// Wrapper around `init` that panics if an error occurs
+pub fn logger_init() {
+    init().unwrap();
+}
+
+/// Globally disable all logging
 pub fn disable_logger() {
     interrupt::free(|_| unsafe {
         LOGGER.enabled = false;
     });
 }
 
+/// Globally enable logging, level filtering is still performed
 pub fn enable_logger() {
     interrupt::free(|_| unsafe {
         LOGGER.enabled = true;
     });
-}
-
-pub fn init() -> Result<(), SetLoggerError> {
-    init_with_level(Level::Trace)
 }

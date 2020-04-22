@@ -1,6 +1,6 @@
 [package]
 name = "itm_logger"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["cs2dsb <cs2dsb@gmail.com>"]
 edition = "2018"
 description = "An implementation of the log facade that sends logging information over ITM stim port 0"
@@ -19,3 +19,4 @@ log = { version = "0.4.6", default-features = false, optional = true }
 [features]
 default = [ "logging" ] #Set up this way so it's possible to disable logging and have the log macros expand to noop
 logging = [ "log", "cortex-m" ]
+perform-enabled-checks = [] #Attempt to check if debug && itm && the stim port are all enabled before logging
