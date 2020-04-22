@@ -32,7 +32,7 @@
 //! Checks performed are:
 //! * Debug is enabled (DCB::DHCSR::DEBUGEN)
 //! * ITM is enabled (ITM::TCR::ITMENA)
-//! * Stim port we're using is enabled (ITM::TCR[PORT])
+//! * Stim port we're using is enabled (ITM::TER[PORT])
 
 #[cfg(feature = "logging")]
 pub use log::{
