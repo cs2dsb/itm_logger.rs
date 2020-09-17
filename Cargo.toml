@@ -1,6 +1,6 @@
 [package]
 name = "itm_logger"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["cs2dsb <cs2dsb@gmail.com>"]
 edition = "2018"
 description = "An implementation of the log facade that sends logging information over ITM stim port 0"
