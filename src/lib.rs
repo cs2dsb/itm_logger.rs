@@ -3,7 +3,7 @@
 //! An implementation of the [log facade](http://crates.io/crates/log) that sends logging information over ITM stim port 0
 //!
 //! Calls to logging macros optimize down to nothing if `logging` feature is not enabled.
-//! 
+//!
 //! # Usage
 //! ```
 //! use itm_logger::{
@@ -14,7 +14,7 @@
 //!     error,
 //!     Level,
 //! };
-//! 
+//!
 //! logger_init();
 //! // if you change the CPU clock during boot up
 //! let sysclk: Hertz = clocks.sysclk().into();
@@ -93,15 +93,7 @@ pub use self::stub as trace;
 
 /// Re-export of `log::error` if logging feature is enabled, `stub` if not
 #[cfg(feature = "logging")]
-#[macro_export]
-macro_rules! error {
-    (target: $target:expr, $($arg:tt)*) => (
-        log!(target: $target, Level::Error, $($arg)*);
-    );
-    ($($arg:tt)*) => (
-        log!(Level::Error, $($arg)*);
-    )
-}
+pub use log::error as error;
 
 /// Re-export of `log::warn` if logging feature is enabled, `stub` if not
 #[cfg(feature = "logging")]
