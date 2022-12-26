@@ -1,6 +1,6 @@
 [package]
 name = "itm_logger"
-version = "0.1.2"
+version = "0.1.3-pre.0"
 authors = ["cs2dsb <cs2dsb@gmail.com>"]
 edition = "2018"
 description = "An implementation of the log facade that sends logging information over ITM stim port 0"
@@ -13,8 +13,8 @@ documentation = "https://docs.rs/itm_logger"
 homepage = "https://github.com/cs2dsb/itm_logger.rs"
 
 [dependencies]
-cortex-m = { version = "0.6.2", optional = true }
-log = { version = "0.4.6", default-features = false, optional = true }
+cortex-m = { version = "0.7", optional = true }
+log = { version = "0.4", default-features = false, optional = true }
 
 [features]
 default = [ "logging" ] #Set up this way so it's possible to disable logging and have the log macros expand to noop

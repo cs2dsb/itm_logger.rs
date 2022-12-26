@@ -32,7 +32,7 @@ pub fn update_tpiu_baudrate(trace_clk_freq: u32, baud: u32) -> Result<(), Error>
     } else {
         let prescaler = (trace_clk_freq / baud) - 1;
         unsafe {
-            (*TPIU::ptr()).acpr.write(prescaler);
+            (*TPIU::PTR).acpr.write(prescaler);
         }
         Ok(())
     }
@@ -80,7 +80,7 @@ impl Log for ItmLogger {
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             unsafe {
-                let itm = &mut (*ITM::ptr());
+                let itm = &mut (*ITM::PTR);
                 interrupt::free(|_| {
                     iprintln!(
                         &mut itm.stim[STIM_PORT_NUMBER],
